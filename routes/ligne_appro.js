@@ -6,5 +6,4 @@ route.post("/ajouter/:id/:ide",auth,controlleur.ajout)
 route.put("/modifier/:id/:ide",controlleur.modifierParId)
 route.delete("/supprimer/:id/:ide",controlleur.supprimerParId)
 route.get("/listerLigneAppro",auth,controlleur.lister)
-route.get("/getProductsInStockAlert/:id",controlleur.getProductsInStockAlert)
 module.exports=route;

@@ -10,8 +10,7 @@ exports.ajout= async(req,res,next) =>{
     }
 }
 exports.modifierParId = async(req, res, next) => {
-    const id = req.params.id;
-    let data = req.body; 
+    
     try {
      await serviceLigneVente.creerOuModifier(req.params.id,req.params.ide,req.body.quantite)
       res.json("ligne appro modifier avec succes")

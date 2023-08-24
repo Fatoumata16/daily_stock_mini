@@ -24,17 +24,8 @@ const appro = sequelize.define('appro', {
     },
     onDelete: 'CASCADE' 
   }),
-  // appro.belongsToMany(produit, {
-  //   through: 'ligne_appro', // Utilisez le nom de la table de liaison
-  //   foreignKey: 'id_appro', // Clé étrangère de l'appro dans la table de liaison
-  // });
+  
   appro.sync()
-  .then(() => {
-    console.log('Le modèle appro a été synchronisé avec la base de données.');
-  })
-  .catch((error) => {
-    console.error('Erreur lors de la synchronisation du modèle User :', error);
-  });
 
 module.exports = appro;
 

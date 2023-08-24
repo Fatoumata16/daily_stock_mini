@@ -42,11 +42,6 @@ const user = sequelize.define('user', {
   });
 
   user.sync()
-  .then(() => {
-    console.log('Le modèle User a été synchronisé avec la base de données.');
-  })
-  .catch((error) => {
-    console.error('Erreur lors de la synchronisation du modèle User :', error);
-  });
+
 
 module.exports = user;

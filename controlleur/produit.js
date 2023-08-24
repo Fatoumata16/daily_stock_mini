@@ -47,7 +47,7 @@ exports.lister=async(req,res,next) =>{
    res.status(500).json({ error: error.message });
   }
 }
-exports.listeralertstock=async(req,res,next) =>{
+exports.listerAlertStock=async(req,res,next) =>{
   try {
  const resultat=  await serviceProduit.getProductsInStockAlert(req.auth.userId)
  
@@ -79,14 +79,14 @@ exports.trouverParLibelle=async(req,res,next) =>{
    res.status(500).json({ error: error.message });
   }
 }
-// exports.getProductsInStockAlert=async(req,res,next) =>{
-//   try {
-//  const resultat=  await serviceProduit.getProductsInStockAlert()
- 
-//    res.status(200).json(resultat);
-//   } catch (error) {
-//    res.status(500).json({ error: error.message });
-//   }
-// }
+exports.inventaireProduit=async(req,res,next) =>{
+  try {
+   await serviceProduit.inventaireProduit(req.params.id)
+           res.status(200).json({ message: 'produit supprimee avec succès' });
+  } catch (error) {
+   res.json(error.message)
+  }
+}
+
      
     

@@ -34,11 +34,6 @@ const depense = sequelize.define('depense', {
     onDelete: 'CASCADE' 
   })
   depense.sync()
-  .then(() => {
-    console.log('Le modèle depense a été synchronisé avec la base de données.');
-  })
-  .catch((error) => {
-    console.error('Erreur lors de la synchronisation du modèle User :', error);
-  });
+  
 
 module.exports = depense;

@@ -16,12 +16,7 @@ const ligne_vente = sequelize.define('ligne_vente', {
   produit.belongsToMany(vente, { through: ligne_vente,foreignKey: 'id_produit', });
 
   ligne_vente.sync()
-  .then(() => {
-    console.log('Le modèle ligne_vente a été synchronisé avec la base de données.');
-  })
-  .catch((error) => {
-    console.error('Erreur lors de la synchronisation du modèle User :', error);
-  });
+ 
 
 module.exports = ligne_vente;
 

@@ -1,7 +1,6 @@
 const express = require('express')
 const controlleur=require('../controlleur/depense')
 const auth=require('../authentification/authorization')
-// const multerr=require('../multer/multer_config')
 const route =express.Router();
 route.post("/ajouter",auth,controlleur.ajout)
 route.put("/modifier/:id",auth,controlleur.modifierParId)

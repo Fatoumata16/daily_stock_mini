@@ -20,11 +20,6 @@ produit.belongsToMany(appro, { through: ligne_appro, foreignKey: 'id_produit' })
 
 
 ligne_appro.sync()
-  .then(() => {
-    console.log('Le modèle ligne_appro a été synchronisé avec la base de données.');
-  })
-  .catch((error) => {
-    console.error('Erreur lors de la synchronisation du modèle ligne_appro :', error);
-  });
+ 
 
 module.exports = ligne_appro;

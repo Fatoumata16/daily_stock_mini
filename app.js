@@ -21,7 +21,10 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
-app.use('/images', express.static(path.join(__dirname, 'images')));
+// Servir les images depuis le dossier externe
+const imagesAbsolutePath = 'C:/Users/Fatoumata DEMBELE/Desktop/images'; // Chemin absolu vers le dossier externe
+app.use('/images', express.static(imagesAbsolutePath));
+// app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use("/user",routeuser)
 app.use("/produit",routeproduit)
 app.use("/vente",routevente)

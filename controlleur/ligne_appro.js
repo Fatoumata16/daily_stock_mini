@@ -9,8 +9,6 @@ exports.ajout= async(req,res,next) =>{
     }
 }
 exports.modifierParId = async(req, res, next) => {
-    const id = req.params.id;
-    let data = req.body; 
     try {
      await serviceLigneAppro.creerOuModifier(req.params.id,req.params.ide,req.body.quantite)
       res.json("ligne appro modifier avec succes")
@@ -35,11 +33,3 @@ exports.modifierParId = async(req, res, next) => {
      res.status(500).json({ error: error.message });
     }
  }
- exports.getProductsInStockAlert=async(req,res,next) =>{
-  try {
- const ress=  await serviceLigneAppro.getProductsInStockAlert(req.params.id)
-           res.status(200).json(ress);
-  } catch (error) {
-   res.json(error.message)
-  }
-}

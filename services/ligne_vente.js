@@ -9,11 +9,11 @@ class LigneVenteService {
       if (ventes === null) {
         throw new Error("Vente non trouvée");
       } else {
-        const pro = await produit.findOne({where:{id_produit,id_user}});
-        if (pro === null) {
+        const produits = await produit.findOne({where:{id_produit,id_user}});
+        if (produits === null) {
           throw new Error("Produit non trouvé");
         } else {
-          await ventes.addProduit(pro, { through: { quantite: quantite } });
+          await ventes.addProduit(produits, { through: { quantite: quantite } });
           await  this.updateStockForProduct(id_produit,quantite);
           return "Produit ajouté à la vente avec succès"; } }
     } catch (error) {
@@ -25,18 +25,16 @@ class LigneVenteService {
       if (ventes === null) {
         throw new Error("Vente non trouvée");
       } else {
-        const pro = await produit.findByPk(id_produit);
-        if (pro === null) {
+        const produits = await produit.findByPk(id_produit);
+        if (produits === null) {
           throw new Error("Produit non trouvé");
         } else {
           const existingLigneAppro = await ventes.getProduits({ where: { id_produit: id_produit} });
           if (existingLigneAppro.length > 0) {
-            // Si la relation existe déjà, mettez à jour la quantité
-            await ventes.setProduits(pro, { through: { quantite: quantite } });  
+            await ventes.setProduits(produits, { through: { quantite: quantite } });  
              return "Quantité mise à jour avec succès";
           } else {
-            // Si la relation n'existe pas, ajoutez le produit avec la quantité
-            await ventes.addProduit(pro, { through: { quantite: quantite } });
+            await ventes.addProduit(produits, { through: { quantite: quantite } });
             return "Produit ajouté à la vente avec succès";
           }
         }
@@ -51,11 +49,11 @@ class LigneVenteService {
       if (ventes === null) {
         throw new Error("Vente non trouvée");
       } else {
-        const pro = await produit.findByPk(id_produit);
-        if (pro === null) {
+        const produits = await produit.findByPk(id_produit);
+        if (produits === null) {
           throw new Error("Produit non trouvé");
         } else {
-          await ventes.removeProduit(pro);
+          await ventes.removeProduit(produits);
           return "Relation vente-produit supprimée avec succès";  }
       }
     } catch (error) {
@@ -73,7 +71,7 @@ class LigneVenteService {
               attributes: ["quantite"], 
             },
             attributes: ["id_vente","date_vente","id_user"], 
-            where:{id_user:id_user}
+            // where:{id_user:id_user}
           },
         ],
         where:{id_user:id_user}
@@ -84,7 +82,6 @@ class LigneVenteService {
         throw new Error(erreur);
       }
   } 
-
   async  TrouverLigneVenteParIdVente(id) {
     try {
       const ligneVente = await ligne_vente.findAll({
@@ -92,10 +89,9 @@ class LigneVenteService {
           id_vente:id
         }
       });
-     
       return ligneVente;
       } catch (erreur) {
-        
+
         throw new Error(erreur);
       } } 
   async  updateStockForProduct(id_produit,quantite) {
@@ -109,7 +105,7 @@ class LigneVenteService {
           { where: {id_produit} } );
       }
       else{
-        throw new Error("vous ne pouvez plus ventre ce produit  car sa quantite en stock est egale a 0 ")
+        throw new Error("vous ne pouvez plus ventre ce produit  car sa quantite en stock est epuise ")
       }
          }
       else{

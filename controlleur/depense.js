@@ -39,7 +39,8 @@ exports.modifierParId = async(req, res, next) => {
  }
  exports.getDepenseByDate=async(req,res,next) =>{
   try {
- const resultat=  await serviceDepense.getDepenseByDate(req.body.date,req.auth.userId)
+    const { dateDebut, dateFin } = req.body;
+ const resultat=  await serviceDepense.getDepenseByDate(dateDebut, dateFin,req.auth.userId)
    res.status(200).json(resultat);
   } catch (error) {
    res.status(500).json({ error: error.message });

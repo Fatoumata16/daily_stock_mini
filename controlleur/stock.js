@@ -22,7 +22,7 @@ exports.modifierParId = async(req, res, next) => {
     exports.supprimerParId=async(req,res,next) =>{
         try {
         await serviceStock.supprimerParId(req.params.id)
-                 res.status(200).json({ message: 'stock supprimee avec succès' });
+       res.status(200).json({ message: 'stock supprimee avec succès' });
         } catch (error) {
          res.json(error.message)
         }

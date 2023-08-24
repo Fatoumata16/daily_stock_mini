@@ -9,16 +9,15 @@ class StockService {
     }
     async  modifierStock(id_stock, stocks) {
         try {
-          const res = await stock.findByPk(id_stock);
-          if (res === null) {
+          const resultatStock = await stock.findByPk(id_stock);
+          if (resultatStock === null) {
             throw new Error('stock non trouvé');
           } else {
-            const updatedStock = {quantite:stocks.quantite }; // Initialiser avec les attributs à mettre à jour
+            const updatedStock = {quantite:stocks.quantite }; 
       
             if (stocks.id_produit !== undefined) {
               updatedStock.id_produit = stocks.id_produit;
             }
-            
             return await stock.update(updatedStock, { where: { id_stock} });
           }
         } catch (error) {

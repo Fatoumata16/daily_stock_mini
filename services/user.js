@@ -5,8 +5,8 @@ class UserService {
     async creer(userr){
     const  {login,nom_boutique,pass,type_boutique,adresse,telephone}=userr;
     try {
-   const u=  await user.findOne({where:{telephone}})
-   if(u){
+   const users=  await user.findOne({where:{telephone}})
+   if(users){
     throw new Error("ce user existe deja")
    }
    else{
@@ -24,24 +24,22 @@ class UserService {
         } else {
           const result= await   bcrypt.compare(password,resultat.pass)
           if (!result) {
-            // return resultat;
             throw new Error('mot de passe incorrect');
           } else {
             return resultat;
           }
         }
       } catch (error) {
-        console.log(error);
         throw new Error(error);
       }
     }
     async  modifierUser(id_user, userr) {
         try {
-          const res = await user.findByPk(id_user);
-          if (res === null) {
+          const resultat = await user.findByPk(id_user);
+          if (resultat === null) {
             throw new Error('utilisateur non trouvé');
           } else {
-            const updatedUser = { login:userr.login }; // Initialiser avec les attributs à mettre à jour
+            const updatedUser = { login:userr.login };
       
             if (userr.nom_boutique !== undefined) {
               updatedUser.numero = userr.numero;
@@ -64,7 +62,6 @@ class UserService {
             return await user.update(updatedUser, { where: { id_user} });
           }
         } catch (error) {
-          console.log(error)
           throw new Error(error);
         }
       }

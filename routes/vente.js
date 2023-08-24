@@ -10,5 +10,5 @@ route.get("/montantTotalVente/:id",auth,controlleur.montantTotalVente)
 route.get("/montantTotalVenteByDateInterval",auth,controlleur.montantTotalVenteByDateInterval)
 route.get("/montantTotalVenteParUser",auth,controlleur.montantTotalVenteParUser)
 route.get("/derniereVente",auth,controlleur.derniereVente)
-route.get("/listerVenteParDate",auth,controlleur.VenteParDate)
+route.get("/listerVenteByIntervalle",auth,controlleur.listerVenteByIntervalle)
 module.exports=route;

@@ -1,11 +1,7 @@
 const approModel = require('../modeles/appro');
 const produitModel = require('../modeles/produit');
-const venteModel=require('../modeles/vente')
-const ligne_approo=require('../modeles/ligne_appro')
 const stockModel=require('../modeles/stock')
-const ligne_vente=require('../modeles/ligne_vente')
-const { Op } = require('sequelize');
-const sequelize = require('../configuration/sequelize_config');
+require('sequelize');
 class LigneApproService {
   async creer(id_appro, id_produit, quantite,id_user) {
     try {
@@ -27,7 +23,6 @@ class LigneApproService {
         }
       }
     } catch (error) {
-      console.log(error);
       throw new Error(error.message);
     }
   }
@@ -37,24 +32,18 @@ class LigneApproService {
       if (appros === null) {
         throw new Error("appro non trouvée");
       } else {
-        const pro = await produitModel.findByPk(id_produit);
-        if (pro === null) {
+        const produits = await produitModel.findByPk(id_produit);
+        if (produits === null) {
           throw new Error("Produit non trouvé");
         } else {
           const existingLigneAppro = await appros.getProduits({ where: { id_produit: id_produit} });
           if (existingLigneAppro.length > 0) {
-            // Si la relation existe déjà, mettez à jour la quantité
-            await appros.setProduits(pro, { through: { quantite: quantite } });  
+            await appros.setProduits(produits, { through: { quantite: quantite } });  
              return "Quantité mise à jour avec succès";
-          } else {
-            // Si la relation n'existe pas, ajoutez le produit avec la quantité
-            await appros.addProduit(pro, { through: { quantite: quantite } });
+          } else {  await appros.addProduits(produits, { through: { quantite: quantite } });
             return "Produit ajouté à la appro avec succès";
-          }
-        }
-      }
+          }   }   }
     } catch (error) {
-      console.log(error)
       throw new Error(error.message);
     }
   }
@@ -64,11 +53,11 @@ class LigneApproService {
       if (appros === null) {
         throw new Error("appro non trouvée");
       } else {
-        const pro = await produitModel.findByPk(id_produit);
-        if (pro === null) {
+        const produits = await produitModel.findByPk(id_produit);
+        if (produits === null) {
           throw new Error("Produit non trouvé");
         } else {
-          await appros.removeProduit(pro);
+          await appros.removeProduit(produits);
           return "Relation appro-produit supprimée avec succès";
         }
       }
@@ -87,7 +76,6 @@ class LigneApproService {
               attributes: ["quantite"], 
             },
             attributes: ["id_appro","date_appro","id_user"], 
-            where:{id_user:id_user}
           },
         ],
         where:{id_user:id_user}
@@ -98,80 +86,6 @@ class LigneApproService {
         throw new Error(erreur);
       }
   } 
-   async  getProductsInStockAlert(id_produit) {
-    try {
-      const products = await produitModel.findAll({
-        attributes: [
-          "id_produit",
-          "libelle",
-          "stock_min",
-          "prix_achat",
-          "prix_vente",
-          [
-            sequelize.literal('CAST(SUM(`appros->ligne_appro`.`quantite`) AS SIGNED)'),
-            'totalAppro'
-          ],
-          [
-            sequelize.literal('CAST(SUM(`ventes->ligne_vente`.`quantite`) AS SIGNED)'),
-            'totalVentes'
-          ]
-        ],
-        include: [
-          {
-            model: approModel,
-            as: 'appros',
-            through: {
-              attributes: ["quantite"], 
-            },
-            attributes: ["id_appro","date_appro","id_user"], 
-          },
-          {
-            model: venteModel,
-            as: 'ventes',
-
-            through: {
-              attributes: ["quantite"], 
-            },
-            attributes: ["id_vente"], 
-          },
-          {
-            model: stockModel,
-            as: 'stock',
-            attributes: ["quantite"],
-             // Ne pas sélectionner les attributs ici, car ils sont inclus dans les expressions ci-dessus
-            },
-        ],
-        where:{
-          id_produit:id_produit,
-        },
-        // group: ['produit.id_produit', 'libelle', 'stock_min', 'prix_achat', 'prix_vente'],
-        // having: sequelize.literal('(COALESCE(SUM(`appros->ligne_appro`.`quantite`), 0) - COALESCE(SUM(`ventes->ligne_vente`.`quantite`), 0)) <= produit.stock_min'),
-      });
-    //   for (const product of products) {
-    //     await updateStockForProduct(product);
-    // }
-    //   const parsedProducts = products
-    //   .filter(product => product.dataValues.totalAppro - product.dataValues.totalVentes <= product.stock_min)
-    //   .map(product => {
-    //     const totalAppro = product.dataValues.totalAppro;
-    //     const totalVentes = product.dataValues.totalVentes;
-    //     return {
-    //       id_produit: product.id_produit,
-    //       libelle: product.libelle,
-    //       stock_min: product.stock_min,
-    //       prix_achat: product.prix_achat,
-    //       prix_vente: product.prix_vente,
-    //       totalAppro: totalAppro,
-    //       totalVentes: totalVentes,
-    //     };
-    //   });
-    return products;
-    
-    } catch (error) {
-      console.error('Erreur lors de la récupération des produits en alerte de stock min :', error);
-      throw new Error(error);
-    }
-  }
   async  updateStockForProduct(id_produit,quantite) {
     try {
       const resultat=await stockModel.findOne({where:{id_produit}})
@@ -179,9 +93,7 @@ class LigneApproService {
       const newQuantite= resultat.quantite + quantite
        await stockModel.update(
          { quantite: newQuantite },
-         { where: {id_produit} }
-     );
-      }
+         { where: {id_produit} } );  }
       else{
        await stockModel.create({quantite,id_produit})
       }

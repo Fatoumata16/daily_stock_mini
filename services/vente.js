@@ -13,11 +13,11 @@ class VenteService {
     }
     async  modifierUser(id_vente, ventee) {
         try {
-          const res = await vente.findByPk(id_vente);
-          if (res === null) {
+          const resultat = await vente.findByPk(id_vente);
+          if (resultat === null) {
             throw new Error('utilisateur non trouvé');
           } else {
-            const updatedUser = {id_user:ventee.id_user }; // Initialiser avec les attributs à mettre à jour
+            const updatedUser = {id_user:ventee.id_user }; 
       
             if (ventee.date_vente !== undefined) {
               updatedUser.date_vente = new Date(ventee.date_vente) ;
@@ -26,14 +26,13 @@ class VenteService {
            return resultat;
           }
         } catch (error) {
-          console.log(error)
           throw new Error(error);
         }
       }
 async supprimerparid(id_vente){
     try {
-  const vent=await    vente.findByPk(id_vente)
-  if(vent){
+  const ventes=await    vente.findByPk(id_vente)
+  if(ventes){
     return await  vente.destroy({where:{id_vente}})
   }
   else{
@@ -64,18 +63,6 @@ async supprimerparid(id_vente){
     } catch (error) {
       throw error;  }
   }
-  async  getVenteByDate(laDate,id_user) {
-    try {
-      const date=new Date(laDate)
-      const ventes = await vente.findAll({
-        where:{
-          id_user:id_user,
-          date_vente:date
-        }});
-      return ventes;
-    } catch (error) {
-      throw error; }
-  }
   async  montantTotalVente(id_vente,id_user) {
     try {
       const totalAmountResult = await vente.findAll({
@@ -85,7 +72,6 @@ async supprimerparid(id_vente){
         ],
         include: [ {
             model: produit,
-            where:{id_user:id_user},
             attributes: [ "prix_vente" ],  }, ],
             where:{id_vente:id_vente,id_user:id_user},
         group: ['vente.id_vente'],
@@ -95,7 +81,7 @@ async supprimerparid(id_vente){
       }
       return totalAmountResult.map(laVente => ({
         id_vente: laVente.id_vente,
-        total_prix_vente_produit: laVente.total, // Ajoutez d'autres attributs ici
+        total_prix_vente_produit: laVente.total, 
         total_quantite: laVente.total_amount,
         total_montant_vente:laVente.total_amount * laVente.total,
       }));
@@ -115,7 +101,6 @@ async supprimerparid(id_vente){
         ],
         include: [ {
             model: produit,
-            where:{id_user:id_user},
             attributes: ["prix_vente"],}, ],
         where: {
           id_user:id_user,
@@ -159,5 +144,37 @@ async supprimerparid(id_vente){
       throw new Error(error);
     }
   }
+  async listerVenteByDate(dateDebut, dateFin,id_user) {
+    try {
+        let whereClause = {};
+        if (dateDebut && dateFin) {
+            whereClause = {
+              date_vente: {
+                    [Op.between]: [dateDebut, dateFin],
+                },
+            };
+        } else if (dateDebut) {
+            whereClause = {
+              date_vente: dateDebut,
+            };
+        }
+        const ventes = await vente.findAll({
+            where: { id_user: id_user,
+              ...whereClause},
+            include: [ {
+              model: produit,
+              attributes: [ "id_produit","libelle"
+            ], }, ],
+        });
+
+        if (ventes.length === 0) {
+            throw new Error('Le tableau est vide');
+        }
+
+        return ventes;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 }
 module.exports = new VenteService();

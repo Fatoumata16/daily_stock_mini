@@ -1,12 +1,8 @@
-const ligne_appro=require('../modeles/ligne_appro')
 const produit=require('../modeles/produit')
-const user=require('../modeles/user')
 const stock=require('../modeles/stock')
 const fs = require('fs');
-const { Op } = require('sequelize');
 const venteModel=require('../modeles/vente')
 const approModel=require('../modeles/appro')
-const ligne_vente=require('../modeles/ligne_vente')
 const sequelize = require('../configuration/sequelize_config');
 class ProduitService {
     async creer(produits,path,id_user){
@@ -21,29 +17,29 @@ class ProduitService {
        throw error
     }
     }
-    async  modifierProduit(id_produit, userr,path) {
+    async  modifierProduit(id_produit, produits,path) {
         try {
-          const res = await produit.findByPk(id_produit);
-          if (res === null) {
+          const resultatProduit = await produit.findByPk(id_produit);
+          if (resultatProduit === null) {
             throw new Error('produit non trouvé');
           } else {
-            const updatedProduit = { stock_min:userr.stock_min }; // Initialiser avec les attributs à mettre à jour
+            const updatedProduit = { stock_min:produits.stock_min }; // Initialiser avec les attributs à mettre à jour
       
-            if (userr.libelle !== undefined) {
-              const p=    await produit.findOne({where:{libelle:userr.libelle}})
+            if (produits.libelle !== undefined) {
+              const p=    await produit.findOne({where:{libelle:produits.libelle}})
             if(p){
               throw new Error('ce produit existe deja')
             }
-              updatedProduit.libelle = userr.libelle;
+              updatedProduit.libelle = produits.libelle;
             }
-            if (userr.prix_achat !== undefined) {
-              updatedProduit.prix_achat = userr.prix_achat;
+            if (produits.prix_achat !== undefined) {
+              updatedProduit.prix_achat = produits.prix_achat;
             }
-            if (userr.prix_vente !== undefined) {
-              updatedProduit.prix_vente = userr.prix_vente;
+            if (produits.prix_vente !== undefined) {
+              updatedProduit.prix_vente = produits.prix_vente;
             }
             if (path !== "") {
-              const filename = res.path.split('/images/')[1];
+              const filename = resultatProduit.path.split('/images/')[1];
               fs.unlink(`images/${filename}`, (err) => {
                 if (err) {
                   console.error('Erreur lors de la suppression de l\'ancienne image :', err);
@@ -54,15 +50,14 @@ class ProduitService {
             return await produit.update(updatedProduit, { where: { id_produit} });
           }
         } catch (error) {
-          console.log(error)
           throw new Error(error);
         }
       }
 async supprimerParId(id_produit){
     try {
-   const p=await   produit.findByPk(id_produit)
-   if(p){
-    const filename = p.path.split('/images/')[1];
+   const produits=await   produit.findByPk(id_produit)
+   if(produits){
+    const filename = produits.path.split('/images/')[1];
    fs.unlink(`images/${filename}`, (err) => {
        if (err) {
            console.error('Erreur lors de la suppression de l\'ancienne image :', err);
@@ -98,49 +93,6 @@ async supprimerParId(id_produit){
       throw new Error(error);
     }
   }
-  //     // products.forEach(product => {
-  //     //   product.stockDifference = (product.totalAppro || 0) - (product.totalVente || 0);
-  //     //   delete product.totalAppro;
-  //     //   delete product.totalVente;
-  //     // });
-  //     return products; 
-  //   } catch (error) {
-  //     console.error(
-  //       'Erreur lors de la récupération des produits en alerte de stock min :',
-  //       error
-  //     );
-  //     throw error;
-  //   }
-  // }
-  
-//   async lister(id_user) {
-//     try {
-//         const tout = await produit.findAll({
-//             attributes: [
-//                 "id_produit"
-//             ],
-//             include: [
-//                 {
-//                     model: approModel,
-                   
-//                 }
-//             ],
-//             where:{id_user:id_user}
-//         });
-
-//         return tout;
-//     } catch (error) {
-//         console.log(error);
-//         throw new Error(error);
-//     }
-// }
-// const user = await User.create({
-//   username: 'alice123',
-//   isAdmin: true
-// }, { fields: ['username'] });
-// // let's assume the default of isAdmin is false
-// console.log(user.username); // 'alice123'
-// console.log(user.isAdmin); // false
 async  leProduitLePlusApprovisionner(id_user) {
   try {
     return await produit.findAll({
@@ -158,7 +110,7 @@ async  leProduitLePlusApprovisionner(id_user) {
           model: approModel,
           as: 'appros',
           attributes: [],
-          through: { attributes: [] }, // Ne pas récupérer les attributs de la table de liaison
+          through: { attributes: [] }, 
         },
       ],
       where:{id_user:id_user},
@@ -167,7 +119,6 @@ async  leProduitLePlusApprovisionner(id_user) {
       limit: 1,
     });
   } catch (error) {
-    console.log(error);
     throw new Error(error);
   }
 }
@@ -189,7 +140,7 @@ async  leProduitLePlusVendu(id_user) {
           model: venteModel,
           as: 'ventes',
           attributes: [],
-          through: { attributes: [] }, // Ne pas récupérer les attributs de la table de liaison
+          through: { attributes: [] },
         },
       ],
       where:{id_user:id_user},
@@ -201,45 +152,6 @@ async  leProduitLePlusVendu(id_user) {
     throw new Error(error);
   }
 }
-// async lister() {
-//   try {
-//     const dateLimite = new Date('2023-08-09'); 
-//   const tout= await approModel.findAll(
-//     {
-//       where:{date_appro :{
-//         [Op.gte]: dateLimite,
-//       }},
-//       include:produit
-//     }
-//   )
-//    return tout
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// }
-// async lister() {
-//   try {
-//     return await approModel.findAll({
-//       include: [
-//         {
-//           model: produit,
-//           include: [
-//             {
-//               model: user, // L'utilisateur associé au produit
-//               attributes: ['login'],
-//             },
-//           ],
-//         },
-//         {
-//           model: user, // L'utilisateur associé à l'approvisionnement
-//           attributes: ['login'],
-//         },
-//       ],
-//     });
-//   } catch (error) {
-//     console.log(error)
-//     throw new Error(error); }
-// }
 async  getProductsInStockAlert(id_user) {
   try {
     const products = await produit.findAll({
@@ -257,6 +169,45 @@ async  getProductsInStockAlert(id_user) {
     }); return products;
   } catch (error) {
     throw new Error(error); }}
+
+    async inventaireProduit(id_produit) {
+      try {
+        const product = await produit.findOne({
+          attributes: [
+            "id_produit", "libelle","stock_min", "prix_achat",  "prix_vente" ],
+          include: [ {
+              model: approModel,
+              as: 'appros',
+              through: {
+                attributes: ["quantite"],  },
+              attributes: ["id_appro","date_appro","id_user"],   }, {
+              model: venteModel,
+              as: 'ventes',
+              through: {
+                attributes: ["quantite"],   },
+              attributes: ["id_vente"],   },  {
+              model: stock,
+              as: 'stock',
+              attributes: ["quantite"],  },  ],
+          where: {
+            id_produit: id_produit,  }, });
+  
+        const totalAppro = await approModel.sum("quantite", {
+          include: {
+            model: produit,
+            where: {
+              id_produit: id_produit,   },  }, });
+  
+        const totalVentes = await venteModel.sum("quantite", {
+          include: {
+            model: produit,
+            where: {
+              id_produit: id_produit,
+            },
+          },
+        });
+        return {product,totalAppro,totalVentes};
+      } catch (error) { throw new Error(error); } }
 }
 module.exports = new ProduitService();
 // exemple d'utilisation d'une transaction en sequelize qui va  permettre d'executer plusieurs requete en meme temps donc si un echoue les autres aussi

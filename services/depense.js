@@ -1,5 +1,4 @@
 const depense=require('../modeles/depense')
-const sequelize = require('../configuration/sequelize_config');
 const { Op } = require('sequelize');
 class DepenseService {
     async creer(depenses,id_user,date_depense){
@@ -15,17 +14,17 @@ class DepenseService {
           if (res === null) {
             throw new Error('depense non trouvé');
           } else {
-            const updatedUser = { libelle:userr.libelle };
+            const updatedDepense = { libelle:userr.libelle };
             if (userr.montant !== undefined) {
-              updatedUser.montant = userr.montant;
+              updatedDepense.montant = userr.montant;
             }
             if (userr.date_depense !== undefined) {
-              updatedUser.date_depense = new Date(userr.date_depense);
+              updatedDepense.date_depense = new Date(userr.date_depense);
             }
             if (userr.id_user !== undefined) {
-              updatedUser.id_user = userr.id_user;
+              updatedDepense.id_user = userr.id_user;
             }
-            return await depense.update(updatedUser, { where: { id_depense} });
+            return await depense.update(updatedDepense, { where: { id_depense} });
           }
         } catch (error) {
           throw new Error(error);
@@ -54,13 +53,27 @@ async supprimerParId(id_depense){
       throw new Error(error);
     }
   }
-  async  getDepenseByDate(date,id_user) {
+  async  getDepenseByDate(dateDebut, dateFin,id_user) {
     try {
-      const laDate=new Date(date)
-      const appros = await depense.findAll({
-        where:{date_depense:laDate,id_user:id_user}
-      });
-      return appros;
+      let whereClause = {};
+        if (dateDebut && dateFin) {
+            whereClause = {
+              date_depense: {
+                    [Op.between]: [dateDebut, dateFin],
+                },
+            };
+        } else if (dateDebut) {
+            whereClause = {
+              date_depense: dateDebut,
+            }; }
+        const depenses = await depense.findAll({
+            where: { id_user: id_user,
+              ...whereClause},
+        });
+        if (depenses.length === 0) {
+            throw new Error('Le tableau est vide');
+        }
+        return depenses;
     } catch (error) {
       throw error;
     }
@@ -77,13 +90,11 @@ async supprimerParId(id_depense){
       const montantTotal = await depense.sum("montant", {
           where: { date_depense: laDate ,id_user:id_user }
       });
-
       return {
           depenses: depensesIndividuelles,
           total_montant: montantTotal || 0  
       };
     } catch (error) {
-      console.log(error)
       throw error;
     }
   }

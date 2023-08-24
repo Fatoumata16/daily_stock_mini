@@ -19,7 +19,7 @@ exports.modifierParId = async(req, res, next) => {
     };
     exports.supprimerParId=async(req,res,next) =>{
         try {
-         const resultat=await serviceVente.supprimerparid(req.params.id)
+       await serviceVente.supprimerparid(req.params.id)
                  res.status(200).json({ message: 'vente supprimee avec succès' });
         } catch (error) {
          res.json(error.message)
@@ -37,15 +37,6 @@ exports.modifierParId = async(req, res, next) => {
  exports.derniereVente=async(req,res,next) =>{
   try {
  const resultat=  await serviceVente.getLastVente(req.auth.userId)
- 
-   res.status(200).json(resultat);
-  } catch (error) {
-   res.status(500).json({ error: error.message });
-  }
-}
-exports.VenteParDate=async(req,res,next) =>{
-  try {
- const resultat=  await serviceVente.getVenteByDate(req.body.date,req.auth.userId)
  
    res.status(200).json(resultat);
   } catch (error) {
@@ -76,5 +67,14 @@ exports.montantTotalVenteParUser=async(req,res,next) =>{
    res.status(200).json(resultat);
   } catch (error) {
    res.status(500).json({ error: error.message });
+  }
+}
+exports.listerVenteByIntervalle=async(req,res,next) =>{
+  try {
+      const { dateDebut, dateFin } = req.body;
+      const ventes = await serviceVente.listerVenteByDate(dateDebut, dateFin,req.auth.userId);
+      res.json(ventes);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
   }
 }

@@ -24,11 +24,6 @@ const vente = sequelize.define('vente', {
     onDelete: 'CASCADE' 
   })
   vente.sync()
-  .then(() => {
-    console.log('Le modèle vente a été synchronisé avec la base de données.');
-  })
-  .catch((error) => {
-    console.error('Erreur lors de la synchronisation du modèle User :', error);
-  });
+
 module.exports = vente;
 

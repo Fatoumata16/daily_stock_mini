@@ -34,15 +34,6 @@ exports.modifierParId = async(req, res, next) => {
      res.status(500).json({ error: error.message });
     }
  }
- exports.getApproByDate=async(req,res,next) =>{
-  try {
- const resultat=  await serviceAppro.getApproByDate(req.body.date,req.auth.userId)
- 
-   res.status(200).json(resultat);
-  } catch (error) {
-   res.status(500).json({ error: error.message });
-  }
-}
 exports.getLastAppro=async(req,res,next) =>{
   try {
  const resultat=  await serviceAppro.getLastAppro(req.auth.userId)
@@ -81,7 +72,7 @@ exports.listerApproByIntervalle=async(req,res,next) =>{
   try {
       const { dateDebut, dateFin } = req.body;
 
-      const appros = await serviceAppro.listerApproByIntervalle(dateDebut, dateFin,req.auth.userId);
+      const appros = await serviceAppro.listerApproByDate(dateDebut, dateFin,req.auth.userId);
       res.json(appros);
   } catch (error) {
       res.status(500).json({ error: error.message });
