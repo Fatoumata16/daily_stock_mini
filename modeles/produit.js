@@ -49,5 +49,4 @@ const produit = sequelize.define('produit', {
     }
   });
   produit.sync()
- 
 module.exports = produit;

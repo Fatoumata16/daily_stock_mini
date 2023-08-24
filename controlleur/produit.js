@@ -81,8 +81,8 @@ exports.trouverParLibelle=async(req,res,next) =>{
 }
 exports.inventaireProduit=async(req,res,next) =>{
   try {
-   await serviceProduit.inventaireProduit(req.params.id)
-           res.status(200).json({ message: 'produit supprimee avec succès' });
+  const resultat= await serviceProduit.inventaireProduit(req.params.id)
+           res.status(200).json(resultat);
   } catch (error) {
    res.json(error.message)
   }

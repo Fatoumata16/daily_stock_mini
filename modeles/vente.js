@@ -24,6 +24,5 @@ const vente = sequelize.define('vente', {
     onDelete: 'CASCADE' 
   })
   vente.sync()
-
 module.exports = vente;
 

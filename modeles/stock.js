@@ -18,7 +18,6 @@ const stock = sequelize.define('stock', {
     tableName: 'stock' ,
     timestamps: false
   });
-  stock.sync()
- 
+  stock.sync() 
 
 module.exports = stock;

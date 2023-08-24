@@ -1,7 +1,9 @@
 const approModel = require('../modeles/appro');
 const produitModel = require('../modeles/produit');
+const venteModel=require('../modeles/vente')
+const ligneapproModel=require('../modeles/ligne_appro')
 const stockModel=require('../modeles/stock')
-require('sequelize');
+const ligneVenteModel=require('../modeles/ligne_vente')
 class LigneApproService {
   async creer(id_appro, id_produit, quantite,id_user) {
     try {
@@ -38,10 +40,10 @@ class LigneApproService {
         } else {
           const existingLigneAppro = await appros.getProduits({ where: { id_produit: id_produit} });
           if (existingLigneAppro.length > 0) {
-            await appros.setProduits(produits, { through: { quantite: quantite } });  
+            await appros.setProduits(produits, { through: { quantite: quantite } });
              return "Quantité mise à jour avec succès";
           } else {  await appros.addProduits(produits, { through: { quantite: quantite } });
-            return "Produit ajouté à la appro avec succès";
+            return "Produit ajouté à l' appro avec succès";
           }   }   }
     } catch (error) {
       throw new Error(error.message);
@@ -76,6 +78,7 @@ class LigneApproService {
               attributes: ["quantite"], 
             },
             attributes: ["id_appro","date_appro","id_user"], 
+            // where:{id_user:id_user}
           },
         ],
         where:{id_user:id_user}

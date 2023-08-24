@@ -20,6 +20,5 @@ produit.belongsToMany(appro, { through: ligne_appro, foreignKey: 'id_produit' })
 
 
 ligne_appro.sync()
- 
 
 module.exports = ligne_appro;

@@ -24,8 +24,6 @@ const appro = sequelize.define('appro', {
     },
     onDelete: 'CASCADE' 
   }),
-  
   appro.sync()
-
 module.exports = appro;
 

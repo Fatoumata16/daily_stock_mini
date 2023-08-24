@@ -16,7 +16,6 @@ const ligne_vente = sequelize.define('ligne_vente', {
   produit.belongsToMany(vente, { through: ligne_vente,foreignKey: 'id_produit', });
 
   ligne_vente.sync()
- 
 
 module.exports = ligne_vente;
 

@@ -1,4 +1,4 @@
-require('sequelize');
+const { DATE } = require('sequelize');
 const appro=require('../modeles/appro')
 const produit=require('../modeles/produit')
 const sequelize = require('../configuration/sequelize_config');
@@ -12,15 +12,15 @@ class ApproService {
     }
     async  modifierApppro(id_appro, appros) {
         try {
-          const res = await appro.findByPk(id_appro);
-          if (res === null) {
+          const resultat = await appro.findByPk(id_appro);
+          if (resultat === null) {
             throw new Error('appro non trouvé');
           } else {
-            const updatedAppro = {id_user:appros.id_user};
+            const updatedUser = {id_user:appros.id_user};
             if (appros.date_appro  !== undefined) {
-              updatedAppro.date_appro=new Date(appros.id_user);
+              updatedUser.date_appro=new Date(appros.date_appro);
             }
-         return await appro.update(updatedAppro, { where: {id_appro} });
+         return await appro.update(updatedUser, { where: {id_appro} });
           }
         } catch (error) {
           throw new Error(error);
@@ -28,8 +28,8 @@ class ApproService {
       }
 async supprimerParId(id_appro){
     try {
-      const b=await appro.findByPk(id_appro)
-      if(b){
+      const resultat=await appro.findByPk(id_appro)
+      if(resultat){
         return await  appro.destroy({where:{id_appro}})
       }
       throw new Error("ce appro n'existe pas")
@@ -48,6 +48,7 @@ async supprimerParId(id_appro){
       throw new Error(error);
     }
   }
+
 async  getLastAppro(id_user) {
   try {
     const lastAppro = await appro.findOne({
@@ -58,14 +59,18 @@ async  getLastAppro(id_user) {
     return lastAppro;
   } catch (error) {
     throw error; }}
+
+
 async  montantTotalAppro(id_appro,id_user) {
-  try {const totalAmountResult = await appro.findAll({
+  try {
+    const totalAmountResult = await appro.findAll({
       attributes: ["id_appro",
         [sequelize.fn('SUM', sequelize.col('quantite')), 'total_amount'],
         [sequelize.fn('SUM', sequelize.col('produits.prix_achat')), 'total'], ],
       include: [ {
           model: produit,
-          attributes: [  ], }, ],
+          attributes: [ 
+        ], }, ],
         where:{id_appro:id_appro,id_user:id_user},
       group: ['appro.id_appro'],
       raw: true,      });
@@ -75,9 +80,9 @@ async  montantTotalAppro(id_appro,id_user) {
       id_appro: appro.id_appro,
       total_produit: appro.total,
       total_quantite: appro.total_amount,
-      total_approvisionnement:appro.total_amount * appro.total, })); }
-     catch (error) { throw new Error(error);}}
-
+      total_approvisionnement:appro.total_amount * appro.total,
+    })); } catch (error) {
+    throw new Error(error);}}
 
     async montantTotalApproByDateInterval(dateDebut, dateFin,id_user) {
       const startDate=new Date(dateDebut)

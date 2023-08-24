@@ -71,7 +71,6 @@ class LigneVenteService {
               attributes: ["quantite"], 
             },
             attributes: ["id_vente","date_vente","id_user"], 
-            // where:{id_user:id_user}
           },
         ],
         where:{id_user:id_user}
@@ -96,6 +95,7 @@ class LigneVenteService {
       } } 
   async  updateStockForProduct(id_produit,quantite) {
     try {
+      console.log(quantite)
       const resultat=await stockModel.findOne({where:{id_produit}})
       if(resultat){
       const newQuantite= resultat.quantite - quantite
