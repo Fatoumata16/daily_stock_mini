@@ -10,6 +10,11 @@ const produit = sequelize.define('produit', {
         primaryKey: true,
         autoIncrement: true,
     },
+    id: {
+      type: DataTypes.INTEGER(10),
+      allowNull: false,
+      
+  },
     libelle: {
       type: DataTypes.STRING(150),
       allowNull: false,

@@ -9,6 +9,11 @@ const depense = sequelize.define('depense', {
         primaryKey: true,
         autoIncrement: true,
     },
+    id: {
+      type: DataTypes.INTEGER(10),
+      allowNull: false,
+      
+  },
     libelle: {
       type: DataTypes.STRING,
       allowNull: false,

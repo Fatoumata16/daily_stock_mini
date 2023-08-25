@@ -80,7 +80,7 @@ async supprimerParId(id_user){
     try {
     const tout= await user.findAll()
     if(tout.length===0){
-      throw new Error ('le tableau est vide')
+      return 'le tableau est vide'
     }
      return tout
     } catch (error) {

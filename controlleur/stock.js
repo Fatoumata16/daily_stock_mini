@@ -29,9 +29,15 @@ exports.modifierParId = async(req, res, next) => {
    }
    exports.lister=async(req,res,next) =>{
     try {
-   const resultat=  await serviceStock.lister()
-   
-     res.status(200).json(resultat);
+   const resultat=  await serviceStock.lister(req.auth.userId)
+   if(resultat.length!=0){
+    res.status(200).json(resultat);
+
+   }
+   else{
+    res.status(200).json("le tableau est vide");
+
+   }
     } catch (error) {
      res.status(500).json({ error: error.message });
     }

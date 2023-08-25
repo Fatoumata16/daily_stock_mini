@@ -63,14 +63,14 @@ class LigneVenteService {
   async  listeLigneVente(id_user) {
     try {
       const produits = await produit.findAll({
-        attributes: ["libelle","stock_min","prix_achat","prix_vente"],
+        attributes: ["id","libelle","stock_min","prix_achat","prix_vente"],
         include: [
           {
             model: vente,
             through: {
               attributes: ["quantite"], 
             },
-            attributes: ["id_vente","date_vente","id_user"], 
+            attributes: ["id","date_vente","id_user"], 
           },
         ],
         where:{id_user:id_user}

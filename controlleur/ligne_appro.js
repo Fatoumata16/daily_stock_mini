@@ -33,3 +33,12 @@ exports.modifierParId = async(req, res, next) => {
      res.status(500).json({ error: error.message });
     }
  }
+ exports.trouverLigneApproParIdVente=async(req,res,next) =>{
+  try {
+ const resultat=  await serviceLigneAppro.trouverLigneApproParIdVente(req.params.id)
+ 
+   res.status(200).json(resultat);
+  } catch (error) {
+   res.status(500).json({ error: error.message });
+  }
+}

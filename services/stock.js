@@ -1,3 +1,5 @@
+const produit = require('../modeles/produit');
+const { Op } = require('sequelize');
 const stock=require('../modeles/stock')
 class StockService {
     async creer(quantite,id_produit){
@@ -33,12 +35,27 @@ async supprimerParId(id_stock){
 
     }
   }
-  async lister() {
+  async lister(id_user) {
     try {
-    const tout= await stock.findAll()
-    if(tout.length===0){
-      throw new Error ('le tableau est vide')
-    }
+      const tout=   produit.findAll({
+          include:
+          {
+         model:stock,
+         where: {
+          quantite: {
+              [Op.not]: null  // Filtre pour les stocks avec une quantité non nulle
+          }
+      }
+         
+          },
+          where:{id_user:id_user}
+        })
+        
+    // await stock.findAll()
+    // if( tout is){
+    //   return 'le tableau est vide'
+    // }
+  
      return tout
     } catch (error) {
       throw new Error(error);

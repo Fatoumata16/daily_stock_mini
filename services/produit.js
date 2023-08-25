@@ -8,11 +8,20 @@ class ProduitService {
     async creer(produits,path,id_user){
     const  {libelle,stock_min,prix_achat,prix_vente}=produits;
     try {
+      let id;
   const p=    await produit.findOne({where:{libelle,id_user}})
       if(p){
         throw new Error('ce produit existe deja')
       }
-      await produit.create({libelle,stock_min,prix_achat,prix_vente,path,id_user})
+     const leproduit= await produit.findOne({where:{id_user:id_user},  order: [['id_produit', 'DESC']],
+      limit: 1})
+      if(leproduit){
+        id=leproduit.id+1
+      }
+      else{
+        id=1
+      }
+      await produit.create({id,libelle,stock_min,prix_achat,prix_vente,path,id_user})
     } catch (error) {
        throw error
     }
@@ -74,7 +83,7 @@ async supprimerParId(id_produit){
     try {
     const tout= await produit.findAll({where:{id_user:id_user}})
     if(tout.length===0){
-      throw new Error ('le tableau est vide')
+      return 'le tableau est vide'
     }
      return tout
     } catch (error) {
@@ -97,7 +106,8 @@ async  leProduitLePlusApprovisionner(id_user) {
   try {
     return await produit.findAll({
       attributes: [
-        'id_produit',
+       'id_produit',
+        'id',
         'libelle',
         [
           sequelize.fn('SUM', sequelize.col('appros->ligne_appro.quantite')),
@@ -127,6 +137,7 @@ async  leProduitLePlusVendu(id_user) {
     return await produit.findAll({
       attributes: [
         'id_produit',
+        'id',
         'libelle',
         [
           sequelize.fn('SUM', sequelize.col('ventes->ligne_vente.quantite')),
@@ -157,6 +168,7 @@ async  getProductsInStockAlert(id_user) {
     const products = await produit.findAll({
       attributes: [
         'id_produit',
+        'id',
         'libelle',
         'stock_min',
         [sequelize.fn('SUM', sequelize.col('stock.quantite')), 'total_stock'], ],
@@ -174,18 +186,18 @@ async  getProductsInStockAlert(id_user) {
       try {
         const product = await produit.findOne({
           attributes: [
-            "id_produit", "libelle","stock_min", "prix_achat",  "prix_vente" ],
+            "id", "libelle","stock_min", "prix_achat",  "prix_vente" ],
           include: [ {
               model: approModel,
               as: 'appros',
               through: {
                 attributes: ["quantite"],  },
-              attributes: ["id_appro","date_appro","id_user"],   }, {
+              attributes: ["id","date_appro","id_user"],   }, {
               model: venteModel,
               as: 'ventes',
               through: {
                 attributes: ["quantite"],   },
-              attributes: ["id_vente"],   },  {
+              attributes: ["id"],   },  {
               model: stock,
               as: 'stock',
               attributes: ["quantite"],  },  ],

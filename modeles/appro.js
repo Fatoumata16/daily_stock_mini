@@ -9,6 +9,11 @@ const appro = sequelize.define('appro', {
         primaryKey: true,
         autoIncrement: true,
     },
+    id: {
+      type: DataTypes.INTEGER(10),
+      allowNull: false,
+      
+  },
     date_appro: {
       type: DataTypes.DATE,
       allowNull: false,

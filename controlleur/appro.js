@@ -31,7 +31,7 @@ exports.modifierParId = async(req, res, next) => {
    
      res.status(200).json(resultat);
     } catch (error) {
-     res.status(500).json({ error: error.message });
+     res.status(500).json( error.message );
     }
  }
 exports.getLastAppro=async(req,res,next) =>{

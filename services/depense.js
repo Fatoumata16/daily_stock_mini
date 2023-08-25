@@ -4,7 +4,16 @@ class DepenseService {
     async creer(depenses,id_user,date_depense){
     const  {libelle,montant}=depenses;
     try {
-      await depense.create({libelle,montant,date_depense,id_user})
+      let id=0
+      const ladepense= await depense.findOne({where:{id_user:id_user},  order: [['id_depense', 'DESC']],
+      limit: 1})
+      if(ladepense){
+        id=ladepense.id+1
+      }
+      else{
+        id=1
+      }
+      await depense.create({id,libelle,montant,date_depense,id_user})
     } catch (error) {
        throw error
     } }
@@ -44,9 +53,11 @@ async supprimerParId(id_depense){
   }
   async lister(id_user) {
     try {
-    const tout= await depense.findAll({where:{id_user}})
+    const tout= await depense.findAll({
+      attributes: ["libelle", "date_depense", "id", "montant"],
+      where:{id_user}})
     if(tout.length===0){
-      throw new Error ('le tableau est vide')
+      return 'le tableau est vide'
     }
      return tout
     } catch (error) {
@@ -67,11 +78,12 @@ async supprimerParId(id_depense){
               date_depense: dateDebut,
             }; }
         const depenses = await depense.findAll({
+          attributes: ["libelle", "date_depense", "id", "montant"],
             where: { id_user: id_user,
               ...whereClause},
         });
         if (depenses.length === 0) {
-            throw new Error('Le tableau est vide');
+           return 'Le tableau est vide';
         }
         return depenses;
     } catch (error) {
@@ -83,7 +95,7 @@ async supprimerParId(id_depense){
       const laDate = new Date(date);
 
       const depensesIndividuelles = await depense.findAll({
-          attributes: ["libelle", "date_depense", "id_depense", "montant"],
+          attributes: ["libelle", "date_depense", "id", "montant"],
           where: { date_depense: laDate,id_user:id_user }
       });
 

@@ -3,7 +3,8 @@ const produitModel = require('../modeles/produit');
 const venteModel=require('../modeles/vente')
 const ligneapproModel=require('../modeles/ligne_appro')
 const stockModel=require('../modeles/stock')
-const ligneVenteModel=require('../modeles/ligne_vente')
+const ligneVenteModel=require('../modeles/ligne_vente');
+const ligne_appro = require('../modeles/ligne_appro');
 class LigneApproService {
   async creer(id_appro, id_produit, quantite,id_user) {
     try {
@@ -70,14 +71,14 @@ class LigneApproService {
   async  listeLigneAppro(id_user) {
     try {
       const produits = await produitModel.findAll({
-        attributes: ["libelle","stock_min","prix_achat","prix_vente"],
+        attributes: ["id","libelle","stock_min","prix_achat","prix_vente"],
         include: [
           {
             model: approModel,
             through: {
               attributes: ["quantite"], 
             },
-            attributes: ["id_appro","date_appro","id_user"], 
+            attributes: ["id","date_appro","id_user"], 
             // where:{id_user:id_user}
           },
         ],
@@ -104,6 +105,19 @@ class LigneApproService {
       throw new Error(error);
     }
 }
+async  trouverLigneApproParIdVente(id) {
+  try {
+    const ligneAppros = await ligne_appro.findAll({
+      where:{
+        id_appro:id
+      }
+    });
+    return ligneAppros;
+    } catch (erreur) {
+
+      throw new Error(erreur);
+    } } 
+
 }
 module.exports= new LigneApproService();
 

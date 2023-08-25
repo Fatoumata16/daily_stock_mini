@@ -5,8 +5,17 @@ const { Op } = require('sequelize');
 const produit=require('../modeles/produit')
 class VenteService {
     async creer(date_vente,id_user){
-    try {      
-      await vente.create({date_vente,id_user})
+    try {  
+      let id=0
+      const ventes= await vente.findOne({where:{id_user:id_user},  order: [['id_vente', 'DESC']],
+      limit: 1})
+      if(ventes){
+        id=ventes.id+1
+      }
+      else{
+        id=1
+      }    
+      await vente.create({id,date_vente,id_user})
     } catch (error) {
        throw error
     }
@@ -46,7 +55,7 @@ async supprimerparid(id_vente){
     try {
     const tout= await vente.findAll({where:{id_user}})
     if(tout.length===0){
-      throw new Error ('le tableau est vide') }
+       return 'le tableau est vide' }
      return tout
     } catch (error) {
       throw new Error(error);
@@ -95,7 +104,7 @@ async supprimerparid(id_vente){
     try {
       const totalAmountResult = await vente.findAll({
         attributes: [
-          "id_vente",
+          "id_vente","id",
           [sequelize.fn('SUM', sequelize.col('quantite')), 'total_amount'],
           [sequelize.fn('SUM', sequelize.col('produits.prix_vente')), 'total'],
         ],
@@ -110,7 +119,7 @@ async supprimerparid(id_vente){
         raw: true,
       });
       return totalAmountResult.map(laVente => ({
-        id_vente: laVente.id_vente,
+        id_vente: laVente.id,
         total_produit: laVente.total, 
         total_quantite: laVente.total_amount,
         total_montant_vente: laVente.total_amount * laVente.total,
@@ -122,7 +131,7 @@ async supprimerparid(id_vente){
   async  montantTotalVenteParUser(id_user) {
     try {
       const totalAmountResult = await vente.findAll({
-        attributes: ["id_vente",
+        attributes: ["id_vente","id",
           [sequelize.fn('SUM', sequelize.col('quantite')), 'total_amount'],
           [sequelize.fn('SUM', sequelize.col('produits.prix_vente')), 'total'],
         ],
@@ -135,7 +144,7 @@ async supprimerparid(id_vente){
         group: ['vente.id_vente'],
         raw: true,      });
       return totalAmountResult.map(laVente => ({
-        id_vente: laVente.id_vente,
+        id_vente: laVente.id,
         total_produit: laVente.total,
         total_quantite: laVente.total_amount,
         total_montant_vente:laVente.total_amount * laVente.total,
